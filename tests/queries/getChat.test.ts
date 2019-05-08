@@ -1,14 +1,17 @@
 import { createTestClient } from 'apollo-server-testing'
 import { ApolloServer, gql } from 'apollo-server-express'
 import schema from '../../schema'
-import { users } from '../../db'
+import { pool } from '../../db'
+import sql from 'sql-template-strings'
 
 describe('Query.chat', () => {
   it('should fetch specified chat', async () => {
+    const { rows } = await pool.query(sql`SELECT * FROM users WHERE id = '1'`)
+    const currentUser = rows[0]
     const server = new ApolloServer({
       schema,
       context: () => ({
-        currentUser: users[0],
+        currentUser,
       }),
     })
 
